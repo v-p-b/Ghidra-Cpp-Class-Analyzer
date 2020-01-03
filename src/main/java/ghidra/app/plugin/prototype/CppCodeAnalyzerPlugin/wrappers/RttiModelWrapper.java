@@ -214,25 +214,29 @@ public class RttiModelWrapper implements ClassTypeInfo {
             List<Rtti1Model> modelList = new ArrayList<>(baseCount);
 
             for (int i = 1; i < baseCount; i++) {
-                Rtti1Model model = baseArray.getRtti1Model(i);
-                if (isVirtual(model)) {
-                    String name = model.getRtti0Model().getDescriptorName();
-                    if (!vModels.contains(name)) {
-                        RttiModelWrapper parent = new RttiModelWrapper(model);
-                        parent.validate();
-                        for (Rtti1Model grandparent : parent.getVirtualModels()) {
-                            String grandparentName = grandparent.getRtti0Model().getDescriptorName();
-                            if (!vModels.contains(grandparentName)) {
-                                virtualModels.add(grandparent);
-                                vModels.add(grandparentName);
-                            }
-                        }
-                        virtualModels.add(model);
-                        vModels.add(name);
-                    }
-                } else {
-                    modelList.add(model);
-                }
+            	try {
+	                Rtti1Model model = baseArray.getRtti1Model(i);
+	                if (isVirtual(model)) {
+	                    String name = model.getRtti0Model().getDescriptorName();
+	                    if (!vModels.contains(name)) {
+	                        RttiModelWrapper parent = new RttiModelWrapper(model);
+	                        parent.validate();
+	                        for (Rtti1Model grandparent : parent.getVirtualModels()) {
+	                            String grandparentName = grandparent.getRtti0Model().getDescriptorName();
+	                            if (!vModels.contains(grandparentName)) {
+	                                virtualModels.add(grandparent);
+	                                vModels.add(grandparentName);
+	                            }
+	                        }
+	                        virtualModels.add(model);
+	                        vModels.add(name);
+	                    }
+	                } else {
+	                    modelList.add(model);
+	                }
+            	}catch(InvalidDataTypeException idte) {
+            		Msg.error(this, idte);
+            	}
             }
             modelList.addAll(virtualModels);
             bases = new ArrayList<>(modelList);
